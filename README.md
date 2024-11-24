@@ -1,5 +1,7 @@
 # LangSynth
 
+Demo URL : https://lang-synth.vercel.app/
+
 ## Description
 
 This application leverages the Akash Chat API, a permissionless Llama3 API powered by the Akash Supercloud, to provide advanced natural language processing capabilities. Built using Next.js, the application allows users to interact with AI to generate code snippets in their preferred programming language and summarize large text inputs.
