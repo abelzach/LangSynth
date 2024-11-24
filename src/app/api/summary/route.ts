@@ -1,14 +1,16 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 
-if (!process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
-  throw new Error('Missing OpenAI API Key');
-}
+let client: OpenAI | null = null;
 
-const client = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-  baseURL: 'https://chatapi.akash.network/api/v1',
-});
+if (process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
+  client = new OpenAI({
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    baseURL: 'https://chatapi.akash.network/api/v1',
+  });
+} else {
+  console.warn('OpenAI API Key is missing, the model functionality may not work.');
+}
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +20,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'Text to summarize is required' },
         { status: 400 }
+      );
+    }
+
+    if (!client) {
+      return NextResponse.json(
+        { error: 'OpenAI API key is missing. Model functionality is unavailable.' },
+        { status: 500 }
       );
     }
     const prompt = `Summarize the following text:\n\n${text}`;
@@ -38,22 +47,22 @@ export async function POST(request: Request) {
       summary: response.choices[0].message.content.trim(),
     });
   } catch (error: unknown) {
-  console.error('Error:', error);
+    console.error('Error:', error);
 
-  if (error instanceof Error) {
-    return NextResponse.json(
-      { 
-        error: error.message || 'Failed to summarise text'
-      },
-      { status: 500 }
-    );
-  } else {
-    return NextResponse.json(
-      { 
-        error: 'Failed to summarise text' 
-      },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { 
+          error: error.message || 'Failed to summarize text'
+        },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        { 
+          error: 'Failed to summarize text' 
+        },
+        { status: 500 }
+      );
+    }
   }
-}
 }
