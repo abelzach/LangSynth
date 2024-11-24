@@ -19,6 +19,7 @@ export default function CodeGenerator() {
   const [summary, setSummary] = useState("");
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [errorSummary, setErrorSummary] = useState("");
+  const [temperature, setTemperature] = useState(0.2);
 
   const generateCode = async () => {
     if (!prompt.trim()) return;
@@ -34,6 +35,7 @@ export default function CodeGenerator() {
         body: JSON.stringify({
           prompt,
           language,
+          temperature,
         }),
       });
 
@@ -145,7 +147,23 @@ export default function CodeGenerator() {
                   ))}
                 </select>
               </div>
-
+              <div>
+                <label
+                  htmlFor="language"
+                  className="block font-bold text-sm font-medium text-gray-700"
+                >
+                  Temperature (Lower temperature means more deterministic results)
+                </label>
+                <input
+                  className="p-2 text-black"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="1"
+                  value={temperature}
+                  onChange={(e) => setTemperature(Number(e.target.value))}
+                />
+              </div>
               <div>
                 <label
                   htmlFor="prompt"

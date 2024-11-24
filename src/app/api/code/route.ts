@@ -12,7 +12,7 @@ const client = new OpenAI({
 
 export async function POST(request: Request) {
   try {
-    const { prompt, language } = await request.json();
+    const { prompt, language, temperature } = await request.json();
 
     if (!prompt || !language) {
       return NextResponse.json(
@@ -20,9 +20,8 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
+    const validTemperature = typeof temperature === 'number' && temperature >= 0 && temperature <= 1 ? temperature : 0.2;
     const enhancedPrompt = `Write the following in ${language}:\n${prompt}\n\nProvide only the code without any explanations.`;
-
     const response = await client.chat.completions.create({
       model: 'Meta-Llama-3-1-8B-Instruct-FP8',
       messages: [
@@ -31,31 +30,29 @@ export async function POST(request: Request) {
           content: enhancedPrompt
         }
       ],
-      temperature: 0.2, 
+      temperature: validTemperature,
       max_tokens: 500
     });
-
     return NextResponse.json({
-        //@ts-expect-error: Suppressing type error due to dynamic content structure
+      //@ts-expect-error: Suppressing type error due to dynamic content structure
       content: response.choices[0].message.content.trim()
     });
-
   } catch (error: unknown) {
-  console.error('Error:', error);
-  if (error instanceof Error) {
-    return NextResponse.json(
-      { 
-        error: error.message || 'Failed to generate code'
-      },
-      { status: 500 }
-    );
-  } else {
-    return NextResponse.json(
-      { 
-        error: 'Failed to generate code' 
-      },
-      { status: 500 }
-    );
+    console.error('Error:', error);
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { 
+          error: error.message || 'Failed to generate code'
+        },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        { 
+          error: 'Failed to generate code' 
+        },
+        { status: 500 }
+      );
+    }
   }
-}
 }
