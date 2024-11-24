@@ -42,9 +42,11 @@ export default function CodeGenerator() {
         throw new Error(data.error || "Failed to generate code");
       }
       setCode(data.content);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error generating code:", error);
-      setError(error.message);
+      if (error instanceof Error) {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -69,9 +71,11 @@ export default function CodeGenerator() {
         throw new Error(data.error || "Failed to summarise text");
       }
       setSummary(data.summary);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error summarising text:", error);
-      setErrorSummary(error.message);
+      if (error instanceof Error) {
+        setError(error.message);
+      }
     } finally {
       setLoadingSummary(false);
     }
@@ -83,9 +87,7 @@ export default function CodeGenerator() {
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="flex font-bold justify-between items-center py-4">
             <div>
-              <h1 className="text-xl font-bold text-gray-800">
-                LangSynth
-              </h1>
+              <h1 className="text-xl font-bold text-gray-800">LangSynth</h1>
             </div>
             <div className="font-bold flex space-x-4">
               <button

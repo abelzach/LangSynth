@@ -34,16 +34,26 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({
-      //@ts-ignore
+      //@ts-expect-error: Suppressing type error due to dynamic content structure
       summary: response.choices[0].message.content.trim(),
     });
-  } catch (error: any) {
-    console.error('Error:', error);
+  } catch (error: unknown) {
+  console.error('Error:', error);
+
+  if (error instanceof Error) {
     return NextResponse.json(
-      {
-        error: error.message || 'Failed to summarize text',
+      { 
+        error: error.message || 'Failed to summarise text'
+      },
+      { status: 500 }
+    );
+  } else {
+    return NextResponse.json(
+      { 
+        error: 'Failed to summarise text' 
       },
       { status: 500 }
     );
   }
+}
 }
