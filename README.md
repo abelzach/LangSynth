@@ -1,6 +1,6 @@
 # LangSynth
 
-Demo URL : https://lang-synth.vercel.app/
+Demo URL : https://2sdpaeknvddjjc23mnpb5h6jto.ingress.akashprovid.com/
 
 ## Description
 
