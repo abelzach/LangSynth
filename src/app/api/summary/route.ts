@@ -39,7 +39,7 @@ export async function POST(request: Request) {
           content: prompt,
         },
       ],
-      max_tokens: 50,
+      max_tokens: 200,
     });
 
     return NextResponse.json({
